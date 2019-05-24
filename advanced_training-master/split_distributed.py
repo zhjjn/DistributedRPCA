@@ -175,7 +175,8 @@ def split(dataX, dataY, num, total, lam_user):
     return average_accuracy
 
 total = 120000
-Lambda = float(sys.argv[1])
+node_num = int(sys.argv[1])
+Lambda = float(sys.argv[2])
 
 data = pd.read_csv("../dataset/NSL_KDD-master/KDDTrain+.csv", iterator = True)
 data = data.get_chunk(total)
@@ -208,45 +209,20 @@ for random_num in range(2018, 2020):
     print X_test.shape
 
     t1 = time.time()
-    dis_accuracy = split(X_test, y_test, 4, X_test.shape[0], 0.0155)
+    dis_accuracy = split(X_test, y_test, node_num, X_test.shape[0], Lambda)
     disrpca_acc.append(dis_accuracy)
     t2 = time.time()
 
     dis_time = (t2 - t1) / 4
     disrpca_time.append(dis_time)
 
-    whiten = False
-    random_state = random_num
-    t3 = time.time()
-    rpca = RobustPCA(lam = 0.0155).fit(X_test)
-    X_test_PCA = rpca.transform(X_test)
-    X_test_PCA = pd.DataFrame(data=X_test_PCA, index=X_test.index)
-
-    X_test_PCA_inverse = rpca.inverse_transform(X_test_PCA)
-    X_test_PCA_inverse = pd.DataFrame(data=X_test_PCA_inverse, \
-                                    index=X_test.index)
-
-    anomalyScoresPCA = anomalyScores(X_test, X_test_PCA_inverse)
-    #preds = plotResults(y_train, anomalyScoresPCA, True)
-    Accuracy = Acc(y_test, anomalyScoresPCA)
-    central_acc.append(Accuracy)
-    t4 = time.time()
-    central_time.append(t4 - t3)
-
+print "Nodes: ", node_num
 dis_acc_average = sum(disrpca_acc) / len(disrpca_acc)
 print "Average DisRPCA Accuracy: ", dis_acc_average
 dis_time_average = sum(disrpca_time) / len(disrpca_time)
 print "Average DisRPCA Time: ", dis_time_average
 
-central_acc_average = sum(central_acc) / len(central_acc)
-print "Average RPCA Accuracy: ", central_acc_average
-central_time_average = sum(central_time) / len(central_time)
-print "Average RPCA Time: ", central_time_average
-
-f = open("Central&4nodes_RPCA.txt", 'a')
-f.write("Average RPCA Accuracy: "+str(central_acc_average)+"\n")
-f.write("Average RPCA Time: "+str(central_time_average)+"\n")
+f = open(str(node_num)+"nodes_RPCA.txt", 'a')
 f.write("Average DisRPCA Accuracy: "+str(dis_acc_average)+"\n")
 f.write("Average DisRPCA Time: "+str(dis_time_average)+"\n")
 f.close()
-

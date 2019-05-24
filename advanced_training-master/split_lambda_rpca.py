@@ -204,7 +204,7 @@ disrpca_time_12 = []
 central_acc = []
 central_time = []
 
-for random_num in range(2018, 2020):
+for random_num in range(2010, 2020):
 
     X_train, X_test, y_train, y_test = \
         train_test_split(dataX, dataY, test_size=0.33, \

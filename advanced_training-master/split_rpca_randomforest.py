@@ -174,7 +174,7 @@ disrpca_lr_time = []
 central_lr_acc = []
 central_lr_time = []
 
-for random_num in range(2010,2012):
+for random_num in range(2018,2020):
     X_train, X_test, y_train, y_test = \
         train_test_split(dataX, dataY, test_size=0.33, \
                         random_state=random_num, stratify=dataY)
