@@ -205,10 +205,10 @@ for random_num in range(2010, 2020):
     X_train, X_test, y_train, y_test = \
         train_test_split(dataX, dataY, test_size=0.33, \
                         random_state=random_num, stratify=dataY)
-    print X_train.shape
+    print X_test.shape
 
     t1 = time.time()
-    dis_accuracy = split(X_train, y_train, 4, X_train.shape[0], Lambda)
+    dis_accuracy = split(X_test, y_test, 4, X_test.shape[0], Lambda)
     disrpca_acc.append(dis_accuracy)
     t2 = time.time()
 
@@ -218,17 +218,17 @@ for random_num in range(2010, 2020):
     whiten = False
     random_state = random_num
     t3 = time.time()
-    rpca = RobustPCA(lam = Lambda).fit(X_train)
-    X_train_PCA = rpca.transform(X_train)
-    X_train_PCA = pd.DataFrame(data=X_train_PCA, index=X_train.index)
+    rpca = RobustPCA(lam = Lambda).fit(X_test)
+    X_test_PCA = rpca.transform(X_test)
+    X_test_PCA = pd.DataFrame(data=X_test_PCA, index=X_test.index)
 
-    X_train_PCA_inverse = rpca.inverse_transform(X_train_PCA)
-    X_train_PCA_inverse = pd.DataFrame(data=X_train_PCA_inverse, \
-                                    index=X_train.index)
+    X_test_PCA_inverse = rpca.inverse_transform(X_test_PCA)
+    X_test_PCA_inverse = pd.DataFrame(data=X_test_PCA_inverse, \
+                                    index=X_test.index)
 
-    anomalyScoresPCA = anomalyScores(X_train, X_train_PCA_inverse)
+    anomalyScoresPCA = anomalyScores(X_test, X_test_PCA_inverse)
     #preds = plotResults(y_train, anomalyScoresPCA, True)
-    Accuracy = Acc(y_train, anomalyScoresPCA)
+    Accuracy = Acc(y_test, anomalyScoresPCA)
     central_acc.append(Accuracy)
     t4 = time.time()
     central_time.append(t4 - t3)
